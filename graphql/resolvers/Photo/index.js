@@ -9,8 +9,6 @@ import {
   checkTokenForEmail,
   decryptUserToken,
 } from "../../../utils/utils.js";
-import ModelReadingTestResult from "../../../mongoose/models/Test/ReadingTest/ReadingResult.js";
-import fs from "fs";
 import cloudinaryUtils from "../../../utils/cloudinary.js";
 
 import Photo from "../../../mongoose/models/Photo/index.js";

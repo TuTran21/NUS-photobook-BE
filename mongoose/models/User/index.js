@@ -83,15 +83,6 @@ const UserSchema = new Schema(
 			ref: 'UserSocialProfile',
 			default: null,
 		},
-		testResults: {
-			reading: [
-				{
-					type: mongoose.Schema.Types.ObjectId,
-					ref: 'ReadingTestResult',
-					default: null,
-				},
-			],
-		},
 		createdBy: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'User',

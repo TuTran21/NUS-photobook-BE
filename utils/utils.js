@@ -1,24 +1,6 @@
-import testConfigs from "../config/tests/index.js";
+
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-
-export const calcReadingScore = (correctAnswerAmount) => {
-  let score = 0;
-
-  if (
-    correctAnswerAmount < testConfigs.scoreRange.readingTest.bandScore[0].from
-  ) {
-    return score;
-  }
-
-  testConfigs.scoreRange.readingTest.bandScore.forEach((band, idx) => {
-    if (correctAnswerAmount >= band.from && correctAnswerAmount <= band.to) {
-      const multiplier = 0.5 * idx;
-      score = 2.5 + multiplier;
-    }
-  });
-  return score;
-};
 
 export const jwtVerify = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET);
