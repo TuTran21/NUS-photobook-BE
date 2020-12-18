@@ -1,6 +1,4 @@
 import User from "../../../mongoose/models/User/index.js";
-import Post from "../../../mongoose/models/Blog/Post.js";
-import Comment from "../../../mongoose/models/Blog/Comment.js";
 import {
   jwtSign,
   bcryptHash,
@@ -9,7 +7,6 @@ import {
   checkTokenForEmail,
   decryptUserToken,
 } from "../../../utils/utils.js";
-import ModelReadingTestResult from "../../../mongoose/models/Test/ReadingTest/ReadingResult.js";
 import fs from "fs";
 import cloudinaryUtils from "../../../utils/cloudinary.js";
 import SocialProfile from "../../../mongoose/models/User/SocialProfile/index.js";
@@ -83,42 +80,6 @@ export default {
       }
     },
 
-    getOverallScore: async (parent, { userId }, context, info) => {
-      const readingResults = await ModelReadingTestResult.find({
-        user: userId,
-      });
-      if (!readingResults) {
-        return {
-          reading: 0,
-          listening: 0,
-          writing: 0,
-        };
-      }
-
-      let averageReadingScore = 0;
-      readingResults.forEach((readingResult) => {
-        averageReadingScore =
-          averageReadingScore + readingResult.result.scoreBand;
-      });
-      averageReadingScore = averageReadingScore / readingResults.length;
-      return {
-        reading: averageReadingScore,
-        listening: 0,
-        writing: 0,
-      };
-    },
-
-    getRpgElement: async (parent, { userId }, context, info) => {
-      try {
-        const socialProfileByUserId = await SocialProfile.findOne({
-          owner: userId,
-        });
-        const rpg = socialProfileByUserId.rpg;
-        return rpg;
-      } catch (err) {
-        return err;
-      }
-    },
 
     getWallPosts: async (parent, { userId }, context, info) => {
       try {
@@ -400,14 +361,6 @@ export default {
       } catch (err) {
         return err;
       }
-    },
-  },
-  User: {
-    posts: async ({ id }, args, context, info) => {
-      return await Post.find({ author: id });
-    },
-    comments: async ({ id }, args, context, info) => {
-      return await Comment.find({ author: id });
     },
   },
 };

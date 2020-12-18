@@ -83,13 +83,6 @@ const UserSchema = new Schema(
 			ref: 'UserSocialProfile',
 			default: null,
 		},
-		posts: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'Post',
-				default: null,
-			},
-		],
 		testResults: {
 			reading: [
 				{
