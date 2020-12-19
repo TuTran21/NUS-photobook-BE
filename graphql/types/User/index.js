@@ -50,7 +50,6 @@ const UserType = gql`
     phone: String
     password: String
     avatar: String
-    posts: [Post!]
     comments: [Comment!]
     socialProfile: UserSocialProfile
     createdAt: Date

@@ -9,11 +9,13 @@ ObjectID.prototype.valueOf = function () {
 };
 
 const AlbumSchema = new Schema({
-  images: [{
-    url: {
-      type: String,
-    }
-  }],
+  images: [
+    {
+      url: {
+        type: String,
+      },
+    },
+  ],
   title: {
     type: String,
   },
@@ -22,21 +24,20 @@ const AlbumSchema = new Schema({
     ref: "User",
   },
   description: {
-    type: Schema.Types.ObjectId,
-    ref: "Post",
+    type: String,
   },
   likes: [
     {
       user: {
         type: Schema.Types.ObjectId,
         ref: "User",
-      }
-    }
+      },
+    },
   ],
   isPublic: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
 
 export default mongoose.model("Album", AlbumSchema);

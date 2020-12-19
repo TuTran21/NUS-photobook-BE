@@ -20,6 +20,7 @@ const PhotoType = gql`
     id: String
     title: String!
     image: Image
+    description: String
     isPublic: Boolean
     user: User
     createdAt: Date
@@ -28,50 +29,37 @@ const PhotoType = gql`
   }
 
   type Query {
-    post(id: String): Post
-    posts(offset: Int, limit: Int): [Post]!
+    photo(id: String): Photo
+    photos(
+      offset: Int
+      limit: Int
+      isPublic: Boolean
+      isOwner: Boolean
+    ): [Photo]!
   }
 
   type Mutation {
-    createPost(post: CreatePostInput): CommonResponse
-    updatePost(post: UpdatePostInput): CommonResponse
-    deletePost(id: String!): CommonResponse
-    deleteManyPosts(posts: [String]): CommonResponse
+    createPhoto(photo: CreatePhotoInput): CommonResponse
+    updatePhoto(post: UpdatePhotoInput): CommonResponse
+    deletePhoto(id: String!): CommonResponse
+    deleteManyPhotos(posts: [String]): CommonResponse
   }
 
-  type Subscription {
-    post: PostSubscriptionPayload!
-  }
-
-  type PostSubscriptionPayload {
-    mutation: MutationType!
-    post: Post!
-  }
-
-  
-  input PostContentInput {
-    html: String
-    text: String
-  }
-
-  input DatesInput {
-    published: String
-    updated: String
-  }
-
-  input CreatePostInput {
+  input CreatePhotoInput {
     title: String!
     image: String
-    content: PostContentInput!
-    isPublished: Boolean!
+    description: String
+    user: ID
+    isPublic: Boolean
   }
 
-  input UpdatePostInput {
+  input UpdatePhotoInput {
     id: String
-    image: String
     title: String!
-    content: PostContentInput!
-    isPublished: Boolean!
+    image: String
+    description: String
+    user: ID
+    isPublic: Boolean
   }
 
   enum MutationType {

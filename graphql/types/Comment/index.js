@@ -6,7 +6,6 @@ const CommentType = gql`
     _id: ID!
     text: String!
     author: User!
-    post: Post!
   }
 
   type Query {
