@@ -19,13 +19,25 @@ const { ApolloError } = ApolloServer;
 export default {
   Query: {
     photo: async (parent, { id }, context, info) => {
-      const photo = await Photo.findById(id).exec();
+      let isOwner = false
+      let photo = await Photo.findById(id).exec();
+      const token = context.req.headers.xtoken;
+      if (token) {
+        const tokenVerify = jwtVerify(token);
+        const userId = tokenVerify.userId;  
+        if (photo.user._id.toString() === userId) {
+          isOwner = true
+        } 
+      }
+
+
+      photo.isOwner = isOwner
+
       return photo;
     },
 
     photos: async (
       parent,
-      args,
       {
         offset = 0,
         limit = 10,
@@ -33,17 +45,23 @@ export default {
         isPublic = true,
         isOwner = false,
       },
+      context,
       info
     ) => {
-      let queryCondition = { isPublic: isPublic };
+
       if (isOwner) {
         const token = context.req.headers.xtoken;
         const userId = await checkTokenForUserId(token);
-        const owner = User.findById(userId);
-        queryCondition.user = owner;
-        queryCondition.isPublic = undefined;
+        const photos = await Photo.find({user: userId}).populate("user")
+        .skip(offset)
+        .limit(limit)
+        .sort(sort)
+        .exec();
+
+      return photos;
       }
-      const photos = await Photo.find(queryCondition)
+
+      const photos = await Photo.find({isPublic: isPublic})
         .populate("user")
         .skip(offset)
         .limit(limit)
@@ -86,27 +104,46 @@ export default {
       }
     },
     updatePhoto: async (parent, { photo }, context, info) => {
+      try{
+      const { image } = photo;
       const token = context.req.headers.xtoken;
       const userId = await checkTokenForUserId(token);
-      let newPhoto = { ...photo };
+      let findPhoto = await Photo.findById(photo.id)
+
+      if (findPhoto.user._id.toString() !== userId) {
+        throw ApolloError("Unauthorized, not owner.", 403);
+      }
+
+      if (!findPhoto) {
+        throw ApolloError("Photo not found.", 404);
+      }
+
+
+      const file = image.url;
       const photoUpload = await cloudinaryUtils.photoUpload(file, userId);
       const photoUrl = photoUpload.url;
-      newPhoto.image.url = photoUrl;
-
-      await Photo.findByIdAndUpdate(
-        photo.id,
-        { $set: { ...newPhoto } },
-        { new: true }
-      );
+      findPhoto = {...photo}
+      findPhoto.image.url = photoUrl
+      findPhoto.save()
       return {
         status: 200,
         message: "Success",
       };
-    },
+    }catch(err){
+      return err
+    }
+    }
+    ,
     deletePhoto: async (parent, { id }, context, info) => {
       try {
         const token = context.req.headers.xtoken;
         const userId = await checkTokenForUserId(token);
+        const findPhoto = await Photo.findById(id)
+
+        if (findPhoto.user._id.toString() !== userId) {
+          throw ApolloError("Unauthorized, not owner.", 403);
+        }
+        
         const user = await User.findById(userId);
         if (!user) {
           throw ApolloError("User not found.");

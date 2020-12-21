@@ -26,6 +26,7 @@ const PhotoType = gql`
     createdAt: Date
     views: Int
     likes: [User]
+    isOwner: Boolean
   }
 
   type Query {
@@ -40,7 +41,7 @@ const PhotoType = gql`
 
   type Mutation {
     createPhoto(photo: CreatePhotoInput): CommonResponse
-    updatePhoto(post: UpdatePhotoInput): CommonResponse
+    updatePhoto(photo: UpdatePhotoInput): CommonResponse
     deletePhoto(id: String!): CommonResponse
     deleteManyPhotos(posts: [String]): CommonResponse
   }
